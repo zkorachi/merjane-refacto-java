@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.stereotype.Service;
 
+import com.nimbleways.springboilerplate.util.ProductType;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 
@@ -23,22 +24,14 @@ public class ProductService {
      * Keeps business rules centralized and testable.
      */
     public void processProductForOrder(Product p) {
-        String type = p.getType();
+        ProductType type = p.getProductType();
 
-        if ("NORMAL".equals(type)) {
-            processNormal(p);
-            return;
+        switch (type) {
+            case NORMAL -> processNormal(p);
+            case SEASONAL -> processSeasonal(p);
+            case EXPIRABLE -> processExpirable(p);
+            default -> throw new IllegalArgumentException("Unknown product type: " + type);
         }
-        if ("SEASONAL".equals(type)) {
-            processSeasonal(p);
-            return;
-        }
-        if ("EXPIRABLE".equals(type)) {
-            processExpirable(p);
-            return;
-        }
-
-        throw new IllegalArgumentException("Unknown product type: " + type);
     }
 
     private void processNormal(Product p) {
